@@ -1,0 +1,13 @@
+{
+    "web": {
+        "client_id": "618102221503-5vkcb7i9ebhk29pfcg7t7h9is7ogeakt.apps.googleusercontent.com",
+        "project_id": "fontes-400216",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_secret": "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",
+        "redirect_uris": [
+            "http://localhost:3333"
+        ]
+    }
+}
