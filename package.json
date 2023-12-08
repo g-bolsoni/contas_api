@@ -11,9 +11,11 @@
         "mongoose": "^6.8.1"
     },
     "scripts": {
-        "dev": "nodemon ./src/index.js"
+        "dev": "nodemon ./src/index.js",
+        "test": "jest"
     },
     "devDependencies": {
+        "jest": "^29.7.0",
         "nodemon": "^2.0.20"
     }
 }
