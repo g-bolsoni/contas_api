@@ -15,6 +15,20 @@ class filterController {
       }
     }
 
+    async getTotalExpenses(req, res)
+    {
+      try {
+        const result = await billsModel.find();
+        const totalExpenses = result.reduce((sum, object) => {
+          return sum + object.value
+        }, 0);
+
+        res.status(200).json(totalExpenses);
+
+      } catch (error) {
+        console.error(error);
+      }
+    }
 }
 
 module.exports = new filterController();

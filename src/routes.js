@@ -18,6 +18,7 @@ router.delete('/bills/', billsController.deleteAllBills);
 
 router.post('/filter', billsController.filterBills);
 router.get('/filter', filterController.getData);
+router.get('/filter/totalExpenses', filterController.getTotalExpenses);
 
 
 module.exports = router;
