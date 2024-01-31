@@ -4,18 +4,16 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const billsSchema = new Schema({
-  id             : ObjectId,
-  description    : String,
-  category       : String,
-  date           : Date,
-  payment_methods: String,
-  value          : Number,
-  from_who       : String,
-  situation      : String,
-  date_ok        : String,
-  repeat         : Boolean,
-  parcel         : String,
-  fixed          : Boolean
+  id           : ObjectId,
+  bill_name    : String,
+  bill_category: String,
+  bill_type    : String,
+  buy_date     : String,
+  payment_type : String,
+  bill_value   : Number,
+  repeat       : Boolean,
+  installments : String,
+  fixed        : Boolean
 });
 
 
