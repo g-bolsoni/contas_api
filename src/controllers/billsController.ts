@@ -1,13 +1,15 @@
+import { Request, Response } from 'express';
+
 const billsModel = require('../models/billsModel');
 
 class productController {
-    async index(req, res) { //Listar constas
+    async index(req: Request, res: Response) { //Listar constas
         const bills = await billsModel.find();
 
         return res.status(200).json(bills);
     }
 
-    async findOne(req, res) { //Listar constas
+    async findOne(req: Request, res: Response) { //Listar constas
 
         try {
             const { id } = req.params;
@@ -25,7 +27,7 @@ class productController {
         }
     }
 
-    async createBills(req, res) { //Criar conta
+    async createBills(req: Request, res: Response) { //Criar conta
         try {
             const createdbills = await billsModel.create(req.body);
             return res.status(200).json(createdbills)
@@ -34,7 +36,7 @@ class productController {
         }
     }
 
-    async updateBills(req, res) { //atualiza conta
+    async updateBills(req: Request, res: Response) { //atualiza conta
         const { id } = req.params;
         try {
             await billsModel.findByIdAndUpdate(id, req.body);
@@ -44,7 +46,7 @@ class productController {
         }
     }
 
-    async deleteBills(req, res) { //Delete conta
+    async deleteBills(req: Request, res: Response) { //Delete conta
         const { id } = req.params;
         try {
             await billsModel.findByIdAndDelete(id);
@@ -54,7 +56,7 @@ class productController {
         }
     }
 
-    async deleteAllBills(req, res) { //Delete conta
+    async deleteAllBills(req: Request, res: Response) { //Delete conta
         try {
             await billsModel.deleteMany();
             return res.status(200).json({ "message": "Bills successfully deleted" });
@@ -63,7 +65,7 @@ class productController {
         }
     }
 
-    async filterBills(req, res) { //Filtra os resultados
+    async filterBills(req: Request, res: Response) { //Filtra os resultados
 
         if (!req.body) { return res.status(404).json({ "message": "Not found" }) }
         try {
