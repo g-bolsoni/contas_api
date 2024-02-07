@@ -4,6 +4,8 @@ const app = express();
 const routes = require('./routes');
 const cors = require('cors');
 
+require('dotenv').config({ path: '.env.local' });
+
 Loaders.start();
 app.use(cors({
     origin: '*'
