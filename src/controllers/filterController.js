@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+// import { Request, Response } from 'express';
 
 const billsModel = require('../models/billsModel');
 
 class filterController {
-    async getData(req: Request, res: Response) {
+    async getData(req, res) {
 
       try {
         const filter = req.query; // Obter os parâmetros de consulta da solicitação
