@@ -13,8 +13,9 @@ const billsSchema = new Schema({
   bill_value: Number,
   repeat: Boolean,
   installments: String,
-  fixed: Boolean
-});
+  fixed: Boolean,
+  user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Adicionado campo user_id
+}, { timestamps: true });
 
 
 const billsModel = mongoose.model('bills', billsSchema);

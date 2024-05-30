@@ -5,9 +5,12 @@ const User = require('../models/usersModel');
 
 class productController {
     async index(req, res) { //Listar constas
-        const bills = await billsModel.find();
+        await this.authenticate(req, res, () => { }); // Autenticação
+
+        const bills = await billsModel.find({ user_id: req.user_id });
 
         return res.status(200).json(bills);
+
     }
 
     async authenticate(req, res, next) { // Função de autenticação para verificar o token e obter o user_id
@@ -30,6 +33,7 @@ class productController {
     }
 
     async findOne(req, res) { //Listar constas
+        await this.authenticate(req, res, () => { }); // Autenticação
 
         try {
             const { id } = req.params;
@@ -48,6 +52,7 @@ class productController {
     }
 
     async createBills(req, res) { //Criar conta
+        await this.authenticate(req, res, () => { }); // Autenticação
         try {
             const createdbills = await billsModel.create(req.body);
             return res.status(200).json(createdbills)
@@ -57,6 +62,7 @@ class productController {
     }
 
     async updateBills(req, res) { //atualiza conta
+        await this.authenticate(req, res, () => { }); // Autenticação
         const { id } = req.params;
         try {
             await billsModel.findByIdAndUpdate(id, req.body);
@@ -67,6 +73,7 @@ class productController {
     }
 
     async deleteBills(req, res) { //Delete conta
+        await this.authenticate(req, res, () => { }); // Autenticação
         const { id } = req.params;
         try {
             await billsModel.findByIdAndDelete(id);
@@ -77,6 +84,7 @@ class productController {
     }
 
     async deleteAllBills(req, res) { //Delete conta
+        await this.authenticate(req, res, () => { }); // Autenticação
         try {
             await billsModel.deleteMany();
             return res.status(200).json({ "message": "Bills successfully deleted" });
@@ -86,6 +94,7 @@ class productController {
     }
 
     async filterBills(req, res) { //Filtra os resultados
+        await this.authenticate(req, res, () => { }); // Autenticação
 
         if (!req.body) { return res.status(404).json({ "message": "Not found" }) }
         try {
