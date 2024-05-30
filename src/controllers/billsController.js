@@ -1,10 +1,32 @@
 const billsModel = require('../models/billsModel');
 
+const jwt = require('jsonwebtoken');
+const User = require('../models/usersModel');
+
 class productController {
     async index(req, res) { //Listar constas
         const bills = await billsModel.find();
 
         return res.status(200).json(bills);
+    }
+
+    async authenticate(req, res, next) { // Função de autenticação para verificar o token e obter o user_id
+        const token = req.header('Authorization').replace('Bearer ', '');
+        if (!token) {
+            return res.status(401).json({ message: 'Autenticação necessária' });
+        }
+
+        try {
+            const decoded = jwt.verify(token, process.env.SECRET);
+            const user = await User.findById(decoded.id);
+            if (!user) {
+                throw new Error();
+            }
+            req.user_id = user._id;
+            next();
+        } catch (error) {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
     }
 
     async findOne(req, res) { //Listar constas
