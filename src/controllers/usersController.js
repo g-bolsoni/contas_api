@@ -67,7 +67,6 @@ class usersController {
 
   async loginUser(req, res) {
     const { email, password } = req.body;
-    console.log(email, password);
 
     if (!email) {
       return res.status(422).json({

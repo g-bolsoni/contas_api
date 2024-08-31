@@ -1,6 +1,11 @@
 const Category = require("../models/categoryModel");
 
 class categoriesController {
+  async getCategories(req, res) {
+    const categories = await Category.find({ user_id: req.user_id });
+
+    return res.status(201).json(categories);
+  }
   async createCategory(req, res) {
     const { name, description, color, icon, category_type, isActive, budget } =
       req.body;

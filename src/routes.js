@@ -43,6 +43,7 @@ router.post("/auth/login", userController.loginUser);
 router.get("/user/:id", verifyToken, userController.getUserLogged);
 
 //Categories
+router.get("/category", verifyToken, categoryControler.getCategories);
 router.post("/category", verifyToken, categoryControler.createCategory);
 
 module.exports = router;
