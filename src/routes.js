@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 
 const billsController = require("./controllers/billsController");
 const filterController = require("./controllers/filterController");
-const userController = require("./controllers/usersController");
+const authController = require("./controllers/authController");
+const userController = require("./controllers/userController");
 const categoryControler = require("./controllers/categoriesController");
 
 // Middleware para autenticação
@@ -37,13 +38,17 @@ router.delete("/bills/", verifyToken, billsController.deleteAllBills);
 router.post("/filter", verifyToken, billsController.filterBills);
 router.get("/filter", filterController.getData);
 
+// Auth
+router.post("/auth/register", authController.registerUser);
+router.post("/auth/login", authController.loginUser);
+
 // User
-router.post("/auth/register", userController.registerUser);
-router.post("/auth/login", userController.loginUser);
 router.get("/user/:id", verifyToken, userController.getUserLogged);
+router.get("/user", verifyToken, userController.getUser);
 
 //Categories
 router.get("/category", verifyToken, categoryControler.getCategories);
 router.post("/category", verifyToken, categoryControler.createCategory);
+router.delete("/category/:id", verifyToken, categoryControler.deleteCategory);
 
 module.exports = router;

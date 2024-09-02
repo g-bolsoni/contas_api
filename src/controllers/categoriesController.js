@@ -52,5 +52,23 @@ class categoriesController {
       return res.status(500).json(error);
     }
   }
+  async deleteCategory(req, res) {
+    //Deletar conta
+    const { id } = req.params;
+
+    try {
+      const catgory = await Category.findOneAndDelete({
+        _id: id,
+        user_id: req.user_id,
+      });
+
+      if (!catgory) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+      return res.status(201).json({ message: "Category successfully deleted" });
+    } catch (error) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+  }
 }
 module.exports = new categoriesController();

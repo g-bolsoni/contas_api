@@ -2,7 +2,7 @@ const usersModel = require("../models/usersModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-class usersController {
+class authController {
   async registerUser(req, res) {
     const { name, email, password, confirmPassword } = req.body;
 
@@ -114,20 +114,6 @@ class usersController {
         .json({ message: "Erro interno ao autenticar o usuário." });
     }
   }
-
-  async getUserLogged(req, res) {
-    const id = req.params.id;
-    // check if user exists
-    const user = await usersModel.findById(id, "-password");
-
-    if (!user) {
-      return res.status(422).json({
-        message: "User not found",
-      });
-    }
-
-    return res.status(200).json(user);
-  }
 }
 
-module.exports = new usersController();
+module.exports = new authController();
