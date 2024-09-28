@@ -43,8 +43,8 @@ router.post("/auth/register", authController.registerUser);
 router.post("/auth/login", authController.loginUser);
 
 // User
-router.get("/user/:id", verifyToken, userController.getUserLogged);
 router.get("/user", verifyToken, userController.getUser);
+router.put("/user", verifyToken, userController.updateUserInfo);
 
 //Categories
 router.get("/category", verifyToken, categoryControler.getCategories);
