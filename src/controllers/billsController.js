@@ -71,7 +71,7 @@ class productController {
       const bill = await billsModel.findOneAndDelete({
         _id: id,
         user_id: req.user_id,
-      }); // Garantir que a consulta inclua user_id
+      });
 
       if (!bill) {
         return res.status(404).json({ message: "Bills not found" });
@@ -85,7 +85,7 @@ class productController {
   async deleteAllBills(req, res) {
     //Deletar conta
     try {
-      billsModel.deleteMany({ user_id: req.user_id }); // Garantir que a consulta inclua user_id
+      billsModel.deleteMany({ user_id: req.user_id });
       return res.status(200).json({ message: "Bills successfully deleted" });
     } catch (error) {
       return res.status(404).json({ message: "Bills not found" });

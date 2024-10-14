@@ -52,6 +52,7 @@ class categoriesController {
       return res.status(500).json(error);
     }
   }
+
   async deleteCategory(req, res) {
     //Deletar conta
     const { id } = req.params;

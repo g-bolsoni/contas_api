@@ -1,6 +1,10 @@
-const usersModel = require("../models/usersModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+
+// models
+const usersModel = require("../models/usersModel");
+const billsModel = require("../models/billsModel");
+const Category = require("../models/categoryModel");
 
 class userController {
   async getUser(req, res) {
@@ -41,6 +45,39 @@ class userController {
     } catch (error) {
       console.error(error);
       res.status(500).send("Erro ao atualizar o cadastro.");
+    }
+  }
+
+  async deleteUser(req, res) {
+    try {
+      const userId = req.user_id;
+
+      const user = await usersModel.findById(userId);
+      const bills = await billsModel.find({ user_id: userId });
+      const category = await Category.find({ user_id: userId });
+
+      if (user) {
+        if (bills) {
+          await billsModel.deleteMany({ user_id: userId });
+        }
+
+        if (category) {
+          await Category.deleteMany({ user_id: userId });
+        }
+
+        await usersModel.findByIdAndDelete(userId);
+      } else {
+        return res.status(404).json({ message: "Usuário não encontrado." });
+      }
+
+      // Retornar sucesso
+      return res.status(200).json({
+        message:
+          "Usuário e todos os dados associados foram deletados com sucesso.",
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Erro ao deletar o usuário." });
     }
   }
 }
