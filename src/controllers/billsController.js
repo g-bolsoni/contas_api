@@ -1,5 +1,6 @@
-const billsModel = require("../models/billsModel");
+const moment = require("moment");
 
+const billsModel = require("../models/billsModel");
 const jwt = require("jsonwebtoken");
 const User = require("../models/usersModel");
 
@@ -36,7 +37,8 @@ class productController {
       const billData = req.body;
       billData.user_id = req.user_id;
 
-      const createdbills = await billsModel.create(billData);
+      await billsModel.create(billData);
+
       return res.status(200).json({ message: "Bill has been created!" });
     } catch (error) {
       res.status(404).json({ message: error });
@@ -107,6 +109,59 @@ class productController {
       return res.status(200).json(filter);
     } catch (error) {
       return res.status(404).json({ message: "Fileter failed" });
+    }
+  }
+
+  async createMonthlyBills(req, res) {
+    const { user_id } = req;
+
+    const startOfLastMonth = moment()
+      .subtract(1, "month")
+      .startOf("month")
+      .toDate();
+    const endOfLastMonth = moment()
+      .subtract(1, "month")
+      .endOf("month")
+      .toDate();
+
+    try {
+      // get all bills are fixed or be repeated for this month
+      const getAllFixedBillsForLastMonth = await billsModel.find({
+        user_id: user_id,
+        fixed: true,
+        buy_date: {
+          $gte: startOfLastMonth,
+          $lte: endOfLastMonth,
+        },
+      });
+
+      if (getAllFixedBillsForLastMonth.length === 0) {
+        console.error("Nenhuma conta fixa encontrada para o mês passado.");
+      }
+
+      // for each bill, create a new bill for this month
+      for (const bill of getAllFixedBillsForLastMonth) {
+        const data = {
+          user_id: user_id,
+          bill_name: bill.bill_name,
+          bill_category: bill.bill_category,
+          bill_type: bill.bill_type,
+          bill_value: bill.bill_value,
+          buy_date: endOfLastMonth,
+          fixed: bill.fixed,
+          repeat: bill.repeat,
+          installments: bill.installments,
+          payment_type: bill.payment_type,
+        };
+
+        await billsModel.create(data);
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Monthly bills created successfullyy!" });
+    } catch (error) {
+      res.status(404).json({ message: error });
     }
   }
 }

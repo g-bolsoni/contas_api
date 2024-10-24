@@ -34,6 +34,8 @@ router.put("/bills/:id", verifyToken, billsController.updateBills);
 router.delete("/bills/:id", verifyToken, billsController.deleteBills);
 router.delete("/bills/", verifyToken, billsController.deleteAllBills);
 
+router.post("/fixedBills", verifyToken, billsController.createMonthlyBills);
+
 // Bills filters
 router.post("/filter", verifyToken, billsController.filterBills);
 router.get("/filter", filterController.getData);
@@ -45,6 +47,7 @@ router.post("/auth/login", authController.loginUser);
 // User
 router.get("/user", verifyToken, userController.getUser);
 router.put("/user", verifyToken, userController.updateUserInfo);
+router.delete("/user", verifyToken, userController.deleteUser);
 
 //Categories
 router.get("/category", verifyToken, categoryControler.getCategories);
