@@ -125,22 +125,33 @@ class productController {
       .toDate();
 
     try {
+      const billsUpdate = [];
+
       // get all bills are fixed or be repeated for this month
-      const getAllFixedBillsForLastMonth = await billsModel.find({
+      const getAllBillsForLastMonth = await billsModel.find({
         user_id: user_id,
-        fixed: true,
         buy_date: {
           $gte: startOfLastMonth,
           $lte: endOfLastMonth,
         },
+        $or: [{ fixed: true }, { repeat: true }],
       });
 
-      if (getAllFixedBillsForLastMonth.length === 0) {
+      if (getAllBillsForLastMonth.length === 0) {
         console.error("Nenhuma conta fixa encontrada para o mês passado.");
       }
 
       // for each bill, create a new bill for this month
-      for (const bill of getAllFixedBillsForLastMonth) {
+      let parcel = 0;
+      let totalParcel = 0;
+
+      for (const bill of getAllBillsForLastMonth) {
+        if (bill.repeat) {
+          parcel = parseInt(bill.installments.split("/")[0]);
+          totalParcel = parseInt(bill.installments.split("/")[1]);
+          if (parcel == totalParcel) continue;
+        }
+
         const data = {
           user_id: user_id,
           bill_name: bill.bill_name,
@@ -150,16 +161,20 @@ class productController {
           buy_date: endOfLastMonth,
           fixed: bill.fixed,
           repeat: bill.repeat,
-          installments: bill.installments,
+          installments: bill.repeat
+            ? `${parcel + 1}/${totalParcel}`
+            : bill.installments,
           payment_type: bill.payment_type,
         };
 
-        await billsModel.create(data);
+        const billCreated = await billsModel.create(data);
+        billsUpdate.push(billCreated);
       }
 
-      return res
-        .status(200)
-        .json({ message: "Monthly bills created successfullyy!" });
+      return res.status(200).json({
+        message: "Monthly bills created successfullyy!",
+        data: billsUpdate,
+      });
     } catch (error) {
       res.status(404).json({ message: error });
     }

@@ -34,7 +34,11 @@ router.put("/bills/:id", verifyToken, billsController.updateBills);
 router.delete("/bills/:id", verifyToken, billsController.deleteBills);
 router.delete("/bills/", verifyToken, billsController.deleteAllBills);
 
-router.post("/fixedBills", verifyToken, billsController.createMonthlyBills);
+router.post(
+  "/updateMonthlyBills",
+  verifyToken,
+  billsController.createMonthlyBills
+);
 
 // Bills filters
 router.post("/filter", verifyToken, billsController.filterBills);
