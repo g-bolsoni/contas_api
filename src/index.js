@@ -5,7 +5,7 @@ const routes = require("./routes");
 
 const app = express();
 
-require("dotenv").config({ path: ".env.local" });
+require("dotenv").config();
 
 Loaders.start();
 app.use(
