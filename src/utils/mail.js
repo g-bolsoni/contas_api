@@ -2,21 +2,20 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-export function sendMail(to, subject, text, html) {
+const sendMail = async (to, subject, html) => {
   // Configure o objeto mailOptions
   const mailOptions = {
     from: process.env.GMAIL_USER,
     to: to, //"giovane.essado@gmail.com",
     subject: subject, // "Enviando Email usando Node.js",
-    text: text, //"Isso foi fácil!",
-    html: html
+    // text: text, //"Isso foi fácil!",
+    html: html,
   };
 
-  const result = dispatchMail(mailOptions);
-  console.log(`Resultado: ${result}`);
-}
+  const result = await dispatchMail(mailOptions);
+};
 
-async function dispatchMail(mailOptions) {
+const dispatchMail = async (mailOptions) => {
   // Crie um objeto transportador
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -29,11 +28,15 @@ async function dispatchMail(mailOptions) {
   });
 
   // Envie o email
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      return "Erro:", error;
-    } else {
-      return "Email enviado: ", info.response;
-    }
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        reject(`Erro: ${error}`);
+      } else {
+        resolve(`Email enviado: ${info.response}`);
+      }
+    });
   });
-}
+};
+
+module.exports = sendMail;

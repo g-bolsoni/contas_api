@@ -1,6 +1,7 @@
 const usersModel = require("../models/usersModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const sendMail = require("../utils/mail.js");
 
 class authController {
   async registerUser(req, res) {
@@ -113,6 +114,90 @@ class authController {
         .status(500)
         .json({ message: "Erro interno ao autenticar o usuário." });
     }
+  }
+
+  async resetPassword(req, res) {
+    const { email } = req.body;
+
+    const existingUser = await usersModel.findOne({ email: email });
+
+    if (!existingUser) {
+      return res.status(422).json({
+        message: "User not found",
+      });
+    }
+
+    const emailToken = await this.generateCode(5);
+    existingUser.resettoken = emailToken;
+    existingUser.resettokenExpiration = Date.now() + 3600000;
+    await existingUser.save();
+
+    await sendMail(
+      email,
+      "Redefinir Senha",
+      `<p font-size: 20px> Seu código para redefiner a senha é ${emailToken}</span>`
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Email enviado!",
+    });
+  }
+
+  async resetPasswordConfirm(req, res) {
+    const { email, code, password } = req.body;
+    const user = await usersModel.findOne({ email: email });
+
+    if (!user) {
+      return res.status(422).json({
+        success: false,
+        message: "Usuário não encontrado!",
+      });
+    }
+
+    if (user.resettoken != code) {
+      return res.status(400).json({
+        success: false,
+        message: "Código inválido!",
+      });
+    }
+
+    if (user.resettokenExpiration < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: "Código expirou!",
+      });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Update User
+    user.password = hashedPassword;
+    user.resettoken = "";
+    user.resettokenExpiration = null;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Senha alterada com sucesso!",
+    });
+  }
+
+  async generateCode(length) {
+    let result = "";
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+    const charactersLength = characters.length; // Corrigido para obter o comprimento da string `characters`
+
+    let count = 0;
+    while (count < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      count++;
+    }
+
+    return result;
   }
 }
 

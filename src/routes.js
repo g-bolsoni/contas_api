@@ -47,6 +47,8 @@ router.get("/filter", filterController.getData);
 // Auth
 router.post("/auth/register", authController.registerUser);
 router.post("/auth/login", authController.loginUser);
+router.post("/resetPassword",authController.resetPassword.bind(authController));
+router.post("/resetPasswordConfirm",authController.resetPasswordConfirm);
 
 // User
 router.get("/user", verifyToken, userController.getUser);
