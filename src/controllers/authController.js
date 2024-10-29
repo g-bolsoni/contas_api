@@ -120,28 +120,35 @@ class authController {
     const { email } = req.body;
 
     const existingUser = await usersModel.findOne({ email: email });
-
     if (!existingUser) {
       return res.status(422).json({
-        message: "User not found",
+        success: false,
+        message: "Usuário não encontrado.",
       });
     }
 
-    const emailToken = await this.generateCode(5);
-    existingUser.resettoken = emailToken;
-    existingUser.resettokenExpiration = Date.now() + 3600000;
-    await existingUser.save();
+    try {
+      const emailToken = await this.generateCode(5);
+      existingUser.resettoken = emailToken;
+      existingUser.resettokenExpiration = Date.now() + 3600000;
+      await existingUser.save();
 
-    await sendMail(
-      email,
-      "Redefinir Senha",
-      `<p font-size: 20px> Seu código para redefiner a senha é ${emailToken}</span>`
-    );
+      await sendMail(
+        email,
+        "Redefinir Senha",
+        `<p font-size: 22px> Seu código para redefiner a senha é ${emailToken}</span>`
+      );
 
-    return res.status(200).json({
-      success: true,
-      message: "Email enviado!",
-    });
+      return res.status(200).json({
+        success: true,
+        message: "Email enviado!",
+      });
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: "Ocorreu um erro inesperado, tente novamente!",
+      });
+    }
   }
 
   async resetPasswordConfirm(req, res) {
