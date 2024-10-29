@@ -9,29 +9,34 @@ class authController {
 
     if (!name) {
       return res.status(422).json({
-        message: "Name is required",
+        field: "name",
+        message: "Este campo é obrigatório.",
       });
     }
     if (!email) {
       return res.status(422).json({
-        message: "Email is required",
+        field: "email",
+        message: "Este campo é obrigatório.",
       });
     }
     if (!password) {
       return res.status(422).json({
-        message: "Password is required",
+        field: "password",
+        message: "Este campo é obrigatório.",
       });
     }
 
     if (!confirmPassword) {
       return res.status(422).json({
-        message: "Password is required",
+        field: "confirmPassword",
+        message: "Este campo é obrigatório.",
       });
     }
 
     if (password !== confirmPassword) {
       return res.status(422).json({
-        message: "Passwords do not match",
+        field: "confirmPassword",
+        message: "As senhas são diferentes.",
       });
     }
 
@@ -40,7 +45,8 @@ class authController {
 
     if (userExists) {
       return res.status(422).json({
-        message: "User already exists",
+        field: "root",
+        message: "Já existe um cadastro com esse email.",
       });
     }
 
@@ -57,7 +63,9 @@ class authController {
 
     try {
       await user.save();
-      return res.status(201).json({ message: "Usuário criado com sucesso." });
+      return res
+        .status(201)
+        .json({ success: true, message: "Usuário criado com sucesso." });
     } catch (error) {
       console.log(error);
       return res
@@ -71,22 +79,28 @@ class authController {
 
     if (!email) {
       return res.status(422).json({
-        message: "Email is required",
+        success: false,
+        field: "email",
+        message: "Este campo é obrigatório.",
       });
     }
 
     if (!password) {
       return res.status(422).json({
-        message: "Password is required",
+        field: "password",
+        success: false,
+        message: "Este campo é obrigatório.",
       });
     }
 
     // Check user exists
     const userExists = await usersModel.findOne({ email });
 
-    if (!userExists) {
+    if (!userExists ) {
       return res.status(422).json({
-        message: "User not found",
+        success: false,
+        field: "root",
+        message: "Credenciais incorretas, verifique e tente novamente!",
       });
     }
 
@@ -96,7 +110,9 @@ class authController {
 
     if (!isPasswordValid) {
       return res.status(422).json({
-        message: "Password is invalid",
+        field: "root",
+        success: false,
+        message: "Credenciais incorretas, verifique e tente novamente!",
       });
     }
 
@@ -107,12 +123,12 @@ class authController {
       });
       return res
         .status(200)
-        .json({ message: "Auth token is valid", Token: token });
+        .json({ success: true, message: "Seja bem vindo!!", Token: token });
     } catch (error) {
-      console.log(error);
-      return res
-        .status(500)
-        .json({ message: "Erro interno ao autenticar o usuário." });
+      return res.status(500).json({
+        success: false,
+        message: "Erro interno ao autenticar o usuário.",
+      });
     }
   }
 
@@ -158,6 +174,7 @@ class authController {
     if (!user) {
       return res.status(422).json({
         success: false,
+        field: "root",
         message: "Usuário não encontrado!",
       });
     }
@@ -165,6 +182,7 @@ class authController {
     if (user.resettoken != code) {
       return res.status(400).json({
         success: false,
+        field: "code",
         message: "Código inválido!",
       });
     }
@@ -172,6 +190,7 @@ class authController {
     if (user.resettokenExpiration < new Date()) {
       return res.status(400).json({
         success: false,
+        field: "code",
         message: "Código expirou!",
       });
     }
@@ -196,7 +215,7 @@ class authController {
   async generateCode(length) {
     let result = "";
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
-    const charactersLength = characters.length; // Corrigido para obter o comprimento da string `characters`
+    const charactersLength = characters.length;
 
     let count = 0;
     while (count < length) {
