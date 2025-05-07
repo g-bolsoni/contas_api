@@ -5,124 +5,114 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/usersModel");
 
 class productController {
-  async index(req, res) {
+  async index(request, reply) {
     //Listar todas contas
 
-    const bills = await billsModel.find({ user_id: req.user_id });
+    const bills = await billsModel.find({ user_id: request.user_id });
 
-    return res.status(200).json(bills);
+    return reply.status(200).json(bills);
   }
 
-  async findOne(req, res) {
+  async findOne(request, reply) {
     //Listar uma conta
 
     try {
-      const { id } = req.params;
+      const { id } = request.params;
 
-      const bill = await billsModel.findById({ _id: id, user_id: req.user_id });
+      const bill = await billsModel.findById({ _id: id, user_id: request.user_id });
 
       if (!bill) {
-        return res.status(404).json({ message: "Not Found" });
+        return reply.status(404).json({ message: "Not Found" });
       }
 
-      return res.status(200).json(bill);
+      return reply.status(200).json(bill);
     } catch (error) {
-      return res.status(404).json({ message: "Bill not found" });
+      return reply.status(404).json({ message: "Bill not found" });
     }
   }
 
-  async createBills(req, res) {
+  async createBills(request, reply) {
     //Criar conta
     try {
-      const billData = req.body;
-      billData.user_id = req.user_id;
+      const billData = request.body;
+      billData.user_id = request.user_id;
 
       await billsModel.create(billData);
 
-      return res.status(200).json({ message: "Bill has been created!" });
+      return reply.status(200).json({ message: "Bill has been created!" });
     } catch (error) {
-      res.status(404).json({ message: error });
+      reply.status(404).json({ message: error });
     }
   }
 
-  async updateBills(req, res) {
+  async updateBills(request, reply) {
     //Atualizar conta
-    const { id } = req.params;
+    const { id } = request.params;
     try {
-      const bill = await billsModel.findOneAndUpdate(
-        { _id: id, user_id: req.user_id },
-        req.body,
-        { new: true }
-      );
+      const bill = await billsModel.findOneAndUpdate({ _id: id, user_id: request.user_id }, request.body, { new: true });
 
       if (!bill) {
-        return res.status(404).json({ message: "This id not exists" });
+        return reply.status(404).json({ message: "This id not exists" });
       }
 
-      return res.status(200).json({ message: "Item updated successfully" });
+      return reply.status(200).json({ message: "Item updated successfully" });
     } catch (error) {
-      return res.status(404).json({ message: "This id not exists" });
+      return reply.status(404).json({ message: "This id not exists" });
     }
   }
 
-  async deleteBills(req, res) {
+  async deleteBills(request, reply) {
     //Deletar conta
-    const { id } = req.params;
+    const { id } = request.params;
 
     try {
       const bill = await billsModel.findOneAndDelete({
         _id: id,
-        user_id: req.user_id,
+        user_id: request.user_id,
       });
 
       if (!bill) {
-        return res.status(404).json({ message: "Bills not found" });
+        return reply.status(404).json({ message: "Bills not found" });
       }
-      return res.status(200).json({ message: "Bills successfully deleted" });
+      return reply.status(200).json({ message: "Bills successfully deleted" });
     } catch (error) {
-      return res.status(404).json({ message: "Bills not found" });
+      return reply.status(404).json({ message: "Bills not found" });
     }
   }
 
-  async deleteAllBills(req, res) {
+  async deleteAllBills(request, reply) {
     //Deletar conta
     try {
-      billsModel.deleteMany({ user_id: req.user_id });
-      return res.status(200).json({ message: "Bills successfully deleted" });
+      billsModel.deleteMany({ user_id: request.user_id });
+      return reply.status(200).json({ message: "Bills successfully deleted" });
     } catch (error) {
-      return res.status(404).json({ message: "Bills not found" });
+      return reply.status(404).json({ message: "Bills not found" });
     }
   }
 
-  async filterBills(req, res) {
+  async filterBills(request, reply) {
     //Filtrar resultados
 
-    if (!req.body) {
-      return res.status(404).json({ message: "Not found" });
+    if (!request.body) {
+      return reply.status(404).json({ message: "Not found" });
     }
 
     try {
       const filter = await billsModel.find({
-        ...req.body,
-        user_id: req.user_id,
+        ...request.body,
+        user_id: request.user_id,
       }); // Garantir que a consulta inclua user_id
-      return res.status(200).json(filter);
+      return reply.status(200).json(filter);
     } catch (error) {
-      return res.status(404).json({ message: "Fileter failed" });
+      return reply.status(404).json({ message: "Fileter failed" });
     }
   }
 
-  async createMonthlyBills(req, res) {
-    const { user_id } = req;
+  async createMonthlyBills(request, reply) {
+    const { user_id } = request;
 
-    const startOfLastMonth = moment()
-      .subtract(1, "month")
-      .startOf("month")
-      .toDate();
-    const endOfLastMonth = moment()
-      .subtract(1, "month")
-      .endOf("month")
-      .toDate();
+    const startOfLastMonth = moment().subtract(1, "month").startOf("month").toDate();
+    const endOfLastMonth = moment().subtract(1, "month").endOf("month").toDate();
 
     try {
       const billsUpdate = [];
@@ -161,9 +151,7 @@ class productController {
           buy_date: endOfLastMonth,
           fixed: bill.fixed,
           repeat: bill.repeat,
-          installments: bill.repeat
-            ? `${parcel + 1}/${totalParcel}`
-            : bill.installments,
+          installments: bill.repeat ? `${parcel + 1}/${totalParcel}` : bill.installments,
           payment_type: bill.payment_type,
         };
 
@@ -171,12 +159,12 @@ class productController {
         billsUpdate.push(billCreated);
       }
 
-      return res.status(200).json({
+      return reply.status(200).json({
         message: "Monthly bills created successfullyy!",
         data: billsUpdate,
       });
     } catch (error) {
-      res.status(404).json({ message: error });
+      reply.status(404).json({ message: error });
     }
   }
 }

@@ -1,15 +1,14 @@
 const Category = require("../models/categoryModel");
 
 class categoriesController {
-  async getCategories(req, res) {
-    const categories = await Category.find({ user_id: req.user_id });
+  async getCategories(request, reply) {
+    const categories = await Category.find({ user_id: request.user_id });
 
-    return res.status(201).json(categories);
+    return reply.status(201).json(categories);
   }
-  async createCategory(req, res) {
-    const { name, description, color, icon, category_type, isActive, budget } =
-      req.body;
-    const user_id = req.user_id;
+  async createCategory(request, reply) {
+    const { name, description, color, icon, category_type, isActive, budget } = request.body;
+    const user_id = request.user_id;
 
     try {
       // Verifica se a categoria já existe para o usuário
@@ -19,14 +18,12 @@ class categoriesController {
       });
 
       if (existingCategory) {
-        return res.status(409).json({ message: "Essa categoria já existe." });
+        return reply.status(409).json({ message: "Essa categoria já existe." });
       }
 
       // Verifica se o nome da categoria foi fornecido
       if (!name) {
-        return res
-          .status(400)
-          .json({ message: "O nome da categoria é obrigatório." });
+        return reply.status(400).json({ message: "O nome da categoria é obrigatório." });
       }
 
       // Cria uma nova categoria
@@ -46,29 +43,29 @@ class categoriesController {
 
       // Retorna a categoria criada
       console.log(savedCategory);
-      return res.status(201).json(savedCategory);
+      return reply.status(201).json(savedCategory);
     } catch (error) {
       console.error("Erro ao criar a categoria:", error.message);
-      return res.status(500).json(error);
+      return reply.status(500).json(error);
     }
   }
 
-  async deleteCategory(req, res) {
+  async deleteCategory(request, reply) {
     //Deletar conta
-    const { id } = req.params;
+    const { id } = request.params;
 
     try {
       const catgory = await Category.findOneAndDelete({
         _id: id,
-        user_id: req.user_id,
+        user_id: request.user_id,
       });
 
       if (!catgory) {
-        return res.status(404).json({ message: "Category not found" });
+        return reply.status(404).json({ message: "Category not found" });
       }
-      return res.status(201).json({ message: "Category successfully deleted" });
+      return reply.status(201).json({ message: "Category successfully deleted" });
     } catch (error) {
-      return res.status(404).json({ message: "Category not found" });
+      return reply.status(404).json({ message: "Category not found" });
     }
   }
 }

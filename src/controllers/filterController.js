@@ -3,17 +3,15 @@
 const billsModel = require("../models/billsModel");
 
 class filterController {
-  async getData(req, res) {
+  async getData(request, reply) {
     try {
-      const filter = req.query; // Obter os parâmetros de consulta da solicitação
+      const filter = request.query; // Obter os parâmetros de consulta da solicitação
 
       const result = await billsModel.find(filter); // Executar a consulta no MongoDB
-      res.status(200).json(result);
+      return reply.status(200).json(result);
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({ message: "Erro interno ao processar a solicitação." });
+      return reply.status(500).json({ message: "Erro interno ao processar a solicitação." });
     }
   }
 }

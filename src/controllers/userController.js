@@ -7,50 +7,50 @@ const billsModel = require("../models/billsModel");
 const Category = require("../models/categoryModel");
 
 class userController {
-  async getUser(req, res) {
-    const userId = req.user_id;
+  async getUser(request, reply) {
+    const userId = request.user_id;
     // check if user exists
     const user = await usersModel.findById(userId, "-password");
 
     if (!user) {
-      return res.status(422).json({
+      return reply.status(422).json({
         message: "User not found",
       });
     }
 
-    return res.status(201).json(user);
+    return reply.status(201).json(user);
   }
 
-  async updateUserInfo(req, res) {
+  async updateUserInfo(request, reply) {
     try {
-      const userId = req.user_id;
+      const userId = request.user_id;
 
-      if (!req.body || Object.keys(req.body).length === 0) {
-        return res.status(400).send("Nenhuma informação para atualizar.");
+      if (!request.body || Object.keys(request.body).length === 0) {
+        return reply.status(400).send("Nenhuma informação para atualizar.");
       }
 
       // Atualiza o usuário no banco de dados
-      const updatedUser = await usersModel.findByIdAndUpdate(userId, req.body, {
+      const updatedUser = await usersModel.findByIdAndUpdate(userId, request.body, {
         new: true,
       });
 
       if (!updatedUser) {
-        return res.status(404).send("Usuário não encontrado.");
+        return reply.status(404).send("Usuário não encontrado.");
       }
 
-      res.status(200).json({
+      reply.status(200).json({
         message: "Cadastro atualizado com sucesso",
         user: updatedUser,
       });
     } catch (error) {
       console.error(error);
-      res.status(500).send("Erro ao atualizar o cadastro.");
+      reply.status(500).send("Erro ao atualizar o cadastro.");
     }
   }
 
-  async deleteUser(req, res) {
+  async deleteUser(request, reply) {
     try {
-      const userId = req.user_id;
+      const userId = request.user_id;
 
       const user = await usersModel.findById(userId);
       const bills = await billsModel.find({ user_id: userId });
@@ -67,17 +67,16 @@ class userController {
 
         await usersModel.findByIdAndDelete(userId);
       } else {
-        return res.status(404).json({ message: "Usuário não encontrado." });
+        return reply.status(404).json({ message: "Usuário não encontrado." });
       }
 
       // Retornar sucesso
-      return res.status(200).json({
-        message:
-          "Usuário e todos os dados associados foram deletados com sucesso.",
+      return reply.status(200).json({
+        message: "Usuário e todos os dados associados foram deletados com sucesso.",
       });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ message: "Erro ao deletar o usuário." });
+      return reply.status(500).json({ message: "Erro ao deletar o usuário." });
     }
   }
 }
