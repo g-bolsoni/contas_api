@@ -10,7 +10,7 @@ class productController {
 
     const bills = await billsModel.find({ user_id: request.user_id });
 
-    return reply.status(200).json(bills);
+    return reply.status(200).send(bills);
   }
 
   async findOne(request, reply) {
@@ -22,12 +22,12 @@ class productController {
       const bill = await billsModel.findById({ _id: id, user_id: request.user_id });
 
       if (!bill) {
-        return reply.status(404).json({ message: "Not Found" });
+        return reply.status(404).send({ message: "Not Found" });
       }
 
-      return reply.status(200).json(bill);
+      return reply.status(200).send(bill);
     } catch (error) {
-      return reply.status(404).json({ message: "Bill not found" });
+      return reply.status(404).send({ message: "Bill not found" });
     }
   }
 
@@ -39,9 +39,9 @@ class productController {
 
       await billsModel.create(billData);
 
-      return reply.status(200).json({ message: "Bill has been created!" });
+      return reply.status(200).send({ message: "Bill has been created!" });
     } catch (error) {
-      reply.status(404).json({ message: error });
+      reply.status(404).send({ message: error });
     }
   }
 
@@ -52,12 +52,12 @@ class productController {
       const bill = await billsModel.findOneAndUpdate({ _id: id, user_id: request.user_id }, request.body, { new: true });
 
       if (!bill) {
-        return reply.status(404).json({ message: "This id not exists" });
+        return reply.status(404).send({ message: "This id not exists" });
       }
 
-      return reply.status(200).json({ message: "Item updated successfully" });
+      return reply.status(200).send({ message: "Item updated successfully" });
     } catch (error) {
-      return reply.status(404).json({ message: "This id not exists" });
+      return reply.status(404).send({ message: "This id not exists" });
     }
   }
 
@@ -72,11 +72,11 @@ class productController {
       });
 
       if (!bill) {
-        return reply.status(404).json({ message: "Bills not found" });
+        return reply.status(404).send({ message: "Bills not found" });
       }
-      return reply.status(200).json({ message: "Bills successfully deleted" });
+      return reply.status(200).send({ message: "Bills successfully deleted" });
     } catch (error) {
-      return reply.status(404).json({ message: "Bills not found" });
+      return reply.status(404).send({ message: "Bills not found" });
     }
   }
 
@@ -84,9 +84,9 @@ class productController {
     //Deletar conta
     try {
       billsModel.deleteMany({ user_id: request.user_id });
-      return reply.status(200).json({ message: "Bills successfully deleted" });
+      return reply.status(200).send({ message: "Bills successfully deleted" });
     } catch (error) {
-      return reply.status(404).json({ message: "Bills not found" });
+      return reply.status(404).send({ message: "Bills not found" });
     }
   }
 
@@ -94,7 +94,7 @@ class productController {
     //Filtrar resultados
 
     if (!request.body) {
-      return reply.status(404).json({ message: "Not found" });
+      return reply.status(404).send({ message: "Not found" });
     }
 
     try {
@@ -102,9 +102,9 @@ class productController {
         ...request.body,
         user_id: request.user_id,
       }); // Garantir que a consulta inclua user_id
-      return reply.status(200).json(filter);
+      return reply.status(200).send(filter);
     } catch (error) {
-      return reply.status(404).json({ message: "Fileter failed" });
+      return reply.status(404).send({ message: "Fileter failed" });
     }
   }
 
@@ -159,12 +159,12 @@ class productController {
         billsUpdate.push(billCreated);
       }
 
-      return reply.status(200).json({
+      return reply.status(200).send({
         message: "Monthly bills created successfullyy!",
         data: billsUpdate,
       });
     } catch (error) {
-      reply.status(404).json({ message: error });
+      reply.status(404).send({ message: error });
     }
   }
 }

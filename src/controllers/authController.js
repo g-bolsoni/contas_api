@@ -8,33 +8,33 @@ class authController {
     const { name, email, password, confirmPassword } = request.body;
 
     if (!name) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         field: "name",
         message: "Este campo é obrigatório.",
       });
     }
     if (!email) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         field: "email",
         message: "Este campo é obrigatório.",
       });
     }
     if (!password) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         field: "password",
         message: "Este campo é obrigatório.",
       });
     }
 
     if (!confirmPassword) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         field: "confirmPassword",
         message: "Este campo é obrigatório.",
       });
     }
 
     if (password !== confirmPassword) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         field: "confirmPassword",
         message: "As senhas são diferentes.",
       });
@@ -44,7 +44,7 @@ class authController {
     const userExists = await usersModel.findOne({ email });
 
     if (userExists) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         field: "root",
         message: "Já existe um cadastro com esse email.",
       });
@@ -63,10 +63,10 @@ class authController {
 
     try {
       await user.save();
-      return reply.status(201).json({ success: true, message: "Usuário criado com sucesso." });
+      return reply.status(201).send({ success: true, message: "Usuário criado com sucesso." });
     } catch (error) {
       console.log(error);
-      return reply.status(500).json({ success: false, message: "Erro interno ao criar o usuário." });
+      return reply.status(500).send({ success: false, message: "Erro interno ao criar o usuário." });
     }
   }
 
@@ -74,7 +74,7 @@ class authController {
     const { email, password } = request.body;
 
     if (!email) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         success: false,
         field: "email",
         message: "Este campo é obrigatório.",
@@ -82,7 +82,7 @@ class authController {
     }
 
     if (!password) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         success: false,
         field: "password",
         message: "Este campo é obrigatório.",
@@ -93,7 +93,7 @@ class authController {
     const userExists = await usersModel.findOne({ email });
 
     if (!userExists) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         success: false,
         field: "root",
         message: "Credenciais incorretas, verifique e tente novamente!",
@@ -105,7 +105,7 @@ class authController {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         field: "root",
         success: false,
         message: "Credenciais incorretas, verifique e tente novamente!",
@@ -117,9 +117,9 @@ class authController {
       const token = jwt.sign({ id: user._id }, secret, {
         expiresIn: 86400, // expires in 24 hours
       });
-      return reply.status(200).json({ success: true, message: "Seja bem vindo!!", Token: token });
+      return reply.status(200).send({ success: true, message: "Seja bem vindo!!", Token: token });
     } catch (error) {
-      return reply.status(500).json({
+      return reply.status(500).send({
         success: false,
         message: "Erro interno ao autenticar o usuário.",
       });
@@ -131,7 +131,7 @@ class authController {
 
     const existingUser = await usersModel.findOne({ email: email });
     if (!existingUser) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         success: false,
         message: "Usuário não encontrado.",
       });
@@ -145,12 +145,12 @@ class authController {
 
       await sendMail(email, "Redefinir Senha", `<p font-size: 22px> Seu código para redefiner a senha é ${emailToken}</span>`);
 
-      return reply.status(200).json({
+      return reply.status(200).send({
         success: true,
         message: "Email enviado!",
       });
     } catch (error) {
-      return reply.status(400).json({
+      return reply.status(400).send({
         success: false,
         message: "Ocorreu um erro inesperado, tente novamente!",
       });
@@ -162,7 +162,7 @@ class authController {
     const user = await usersModel.findOne({ email: email });
 
     if (!user) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         success: false,
         field: "root",
         message: "Usuário não encontrado!",
@@ -170,7 +170,7 @@ class authController {
     }
 
     if (user.resettoken != code) {
-      return reply.status(400).json({
+      return reply.status(400).send({
         success: false,
         field: "code",
         message: "Código inválido!",
@@ -178,7 +178,7 @@ class authController {
     }
 
     if (user.resettokenExpiration < new Date()) {
-      return reply.status(400).json({
+      return reply.status(400).send({
         success: false,
         field: "code",
         message: "Código expirou!",
@@ -196,7 +196,7 @@ class authController {
 
     await user.save();
 
-    return reply.status(200).json({
+    return reply.status(200).send({
       success: true,
       message: "Senha alterada com sucesso!",
     });

@@ -5,9 +5,6 @@ const filterController = require("./controllers/filterController");
 const authController = require("./controllers/authController");
 const userController = require("./controllers/userController");
 const categoryControler = require("./controllers/categoriesController");
-const { schema } = require("./models/billsModel");
-const { file } = require("googleapis/build/src/apis/file");
-const { response } = require("express");
 
 async function routes(fastify, options) {
   // Middleware para autenticação
@@ -374,12 +371,18 @@ async function routes(fastify, options) {
       schema: {
         tags: ["User"],
         response: {
-          200: {
+          201: {
             type: "object",
             properties: {
               id: { type: "string" },
               name: { type: "string" },
               email: { type: "string", format: "email" },
+            },
+          },
+          422: {
+            type: "object",
+            properties: {
+              message: { type: "string" },
             },
           },
         },

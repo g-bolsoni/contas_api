@@ -4,7 +4,7 @@ class categoriesController {
   async getCategories(request, reply) {
     const categories = await Category.find({ user_id: request.user_id });
 
-    return reply.status(201).json(categories);
+    return reply.status(201).send(categories);
   }
   async createCategory(request, reply) {
     const { name, description, color, icon, category_type, isActive, budget } = request.body;
@@ -18,12 +18,12 @@ class categoriesController {
       });
 
       if (existingCategory) {
-        return reply.status(409).json({ message: "Essa categoria já existe." });
+        return reply.status(409).send({ message: "Essa categoria já existe." });
       }
 
       // Verifica se o nome da categoria foi fornecido
       if (!name) {
-        return reply.status(400).json({ message: "O nome da categoria é obrigatório." });
+        return reply.status(400).send({ message: "O nome da categoria é obrigatório." });
       }
 
       // Cria uma nova categoria
@@ -43,10 +43,10 @@ class categoriesController {
 
       // Retorna a categoria criada
       console.log(savedCategory);
-      return reply.status(201).json(savedCategory);
+      return reply.status(201).send(savedCategory);
     } catch (error) {
       console.error("Erro ao criar a categoria:", error.message);
-      return reply.status(500).json(error);
+      return reply.status(500).send(error);
     }
   }
 
@@ -61,11 +61,11 @@ class categoriesController {
       });
 
       if (!catgory) {
-        return reply.status(404).json({ message: "Category not found" });
+        return reply.status(404).send({ message: "Category not found" });
       }
-      return reply.status(201).json({ message: "Category successfully deleted" });
+      return reply.status(201).send({ message: "Category successfully deleted" });
     } catch (error) {
-      return reply.status(404).json({ message: "Category not found" });
+      return reply.status(404).send({ message: "Category not found" });
     }
   }
 }

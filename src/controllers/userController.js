@@ -13,12 +13,12 @@ class userController {
     const user = await usersModel.findById(userId, "-password");
 
     if (!user) {
-      return reply.status(422).json({
+      return reply.status(422).send({
         message: "User not found",
       });
     }
 
-    return reply.status(201).json(user);
+    return reply.status(201).send(user);
   }
 
   async updateUserInfo(request, reply) {
@@ -38,7 +38,7 @@ class userController {
         return reply.status(404).send("Usuário não encontrado.");
       }
 
-      reply.status(200).json({
+      reply.status(200).send({
         message: "Cadastro atualizado com sucesso",
         user: updatedUser,
       });
@@ -67,16 +67,16 @@ class userController {
 
         await usersModel.findByIdAndDelete(userId);
       } else {
-        return reply.status(404).json({ message: "Usuário não encontrado." });
+        return reply.status(404).send({ message: "Usuário não encontrado." });
       }
 
       // Retornar sucesso
-      return reply.status(200).json({
+      return reply.status(200).send({
         message: "Usuário e todos os dados associados foram deletados com sucesso.",
       });
     } catch (error) {
       console.error(error);
-      return reply.status(500).json({ message: "Erro ao deletar o usuário." });
+      return reply.status(500).send({ message: "Erro ao deletar o usuário." });
     }
   }
 }
